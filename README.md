@@ -103,3 +103,9 @@ int main() {
 │ bar            │ [512, 768] │  73.66 ns │  81.55 ns │  83.48 ns │   8.28 ns │
 ╰────────────────┴────────────┴───────────┴───────────┴───────────┴───────────╯
 ```
+
+# screenshot
+visualization can be done using [`estra`](https://github.com/sarah-ek/estra/).
+
+![image](https://github.com/sarah-ek/diol-cbind/assets/40109184/4de9e290-0180-40bc-8857-5cb8a277f33d)
+
