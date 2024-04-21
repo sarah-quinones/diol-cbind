@@ -1,0 +1,11 @@
+[package]
+name = "diol-cbind"
+version = "0.8.0"
+edition = "2021"
+
+[lib]
+crate-type = ["staticlib", "lib"]
+
+[dependencies]
+diol = { version = "0.7.0", path = "../diol", default-features = false }
+equator = "0.2.0"
