@@ -2,6 +2,12 @@
 name = "diol-cbind"
 version = "0.8.0"
 edition = "2021"
+authors = ["sarah <>"]
+description = "benchmark lib"
+readme = "README.md"
+repository = "https://github.com/sarah-ek/diol/"
+license = "MIT"
+keywords = ["benchmark"]
 
 [lib]
 crate-type = ["staticlib", "lib"]
