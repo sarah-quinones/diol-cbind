@@ -1,3 +1,7 @@
+# installation
+- copy the `diol.h` and `diol.hpp` headers to your include directory.
+- compile the `diol` static lib with `cargo build --release` and link `.target/release/libdiol_cbind.a` to your program.
+
 # example
 
 ```cpp
