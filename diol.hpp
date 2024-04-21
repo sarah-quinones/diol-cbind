@@ -1,8 +1,6 @@
 #ifndef LIBDIOL_API_HEADER_GUARD
 #define LIBDIOL_API_HEADER_GUARD
 
-#include <iostream>
-
 #include "diol.h"
 #include <cstddef>
 #include <cstdint>
@@ -13,10 +11,55 @@
 #include <span>
 #include <sstream>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 namespace diol {
+
+namespace detail {
+template <typename F, typename... Ts, std::size_t... Is>
+void for_each_impl(std::index_sequence<Is...>, F &&f,
+                   std::tuple<Ts...> const &tup) {
+  int _unused[] = {0, (f(std::get<Is>(tup)), 0)...};
+}
+} // namespace detail
+
+template <typename... Ts> struct Tuple {
+  std::tuple<Ts...> inner;
+
+  Tuple(std::tuple<Ts...> inner) : inner{std::move(inner)} {}
+
+  friend std::ostream &operator<<(std::ostream &os, Tuple const &tup) {
+    os << "[";
+    char const *sep = "";
+    detail::for_each_impl(
+        std::make_index_sequence<sizeof...(Ts)>{},
+        [&](auto const &elem) {
+          os << sep << elem;
+          sep = ", ";
+        },
+        tup.inner);
+    os << "]";
+    return os;
+  }
+
+  template <std::size_t I> friend decltype(auto) get(Tuple const &t) {
+    return std::get<I>(t.inner);
+  }
+
+  template <std::size_t I> friend decltype(auto) get(Tuple &t) {
+    return std::get<I>(t.inner);
+  }
+
+  template <std::size_t I> friend decltype(auto) get(Tuple const &&t) {
+    return std::get<I>(std::move(t.inner));
+  }
+
+  template <std::size_t I> friend decltype(auto) get(Tuple &&t) {
+    return std::get<I>(std::move(t.inner));
+  }
+};
 
 using Monotonicity = LibDiolMonotonicity;
 
@@ -151,13 +194,13 @@ struct Bench {
           funcs[i].name.data(),
           funcs[i].name.size(),
       });
-      func_data.push_back(
-          static_cast<void const *>(std::addressof(funcs[i].f)));
-      func_ptrs.push_back(
-          [](void const *func_data, LibDiolBencher *bencher, void *arg) {
-            auto ptr = static_cast<Ptr<FnPtr<Bencher, T> const>>(func_data);
-            (*ptr)(Bencher{bencher}, static_cast<T &&>(*static_cast<T *>(arg)));
-          });
+      func_data.push_back(reinterpret_cast<void const *>(funcs[i].f));
+      func_ptrs.push_back([](void const *func_data, LibDiolBencher *bencher,
+                             void *arg) {
+        auto ptr =
+            reinterpret_cast<FnPtr<Bencher, T>>(const_cast<void *>(func_data));
+        (*ptr)(Bencher{bencher}, static_cast<T &&>(*static_cast<T *>(arg)));
+      });
     }
 
     for (std::size_t i = 0; i < args.size(); ++i) {
@@ -168,7 +211,6 @@ struct Bench {
         this->ptr, func_names.data(), func_data.data(), func_ptrs.data(),
         funcs.size(), arg_ptrs.data(), args.size(),
         +[](void const *ptr) {
-          std::cout << *Ptr<T const>(ptr) << "\n";
           return static_cast<void *>(new T(*Ptr<T const>(ptr)));
         },
         +[](void *ptr) { delete Ptr<T>(ptr); },
@@ -193,5 +235,13 @@ private:
   LibDiolBench *ptr;
 };
 } // namespace diol
+
+namespace std {
+template <typename... Ts>
+struct tuple_size<diol::Tuple<Ts...>> : tuple_size<tuple<Ts...>> {};
+template <size_t I, typename... Ts>
+struct tuple_element<I, diol::Tuple<Ts...>> : tuple_element<I, tuple<Ts...>> {};
+
+} // namespace std
 
 #endif /* LIBDIOL_API_HEADER_GUARD */

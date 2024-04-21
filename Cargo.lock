@@ -125,7 +125,7 @@ dependencies = [
 
 [[package]]
 name = "diol"
-version = "0.7.0"
+version = "0.8.0"
 dependencies = [
  "clap",
  "colorgrad",
@@ -141,7 +141,7 @@ dependencies = [
 
 [[package]]
 name = "diol-cbind"
-version = "0.1.0"
+version = "0.8.0"
 dependencies = [
  "diol",
  "equator",
