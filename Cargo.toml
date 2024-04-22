@@ -1,6 +1,6 @@
 [package]
 name = "diol-cbind"
-version = "0.8.0"
+version = "0.8.2"
 edition = "2021"
 authors = ["sarah <>"]
 description = "benchmark lib"
@@ -13,5 +13,5 @@ keywords = ["benchmark"]
 crate-type = ["staticlib", "lib"]
 
 [dependencies]
-diol = { version = "0.8.0", path = "../diol", default-features = false }
+diol = { version = "0.8.2", path = "../diol", default-features = false }
 equator = "0.2.0"
